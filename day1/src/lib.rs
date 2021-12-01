@@ -1,24 +1,15 @@
-use std::fs::File;
-use std::io::BufRead;
-use std::io::{self, BufReader};
+use utils::read_lines_as_u32;
+use std::io::Result;
 
-pub fn calc_result() -> u32 {
-    let depths = read_file(String::from("input.txt"));
-    calc_num_higher(depths)
+pub fn calc_result(filename: &str) -> Result<u32> {
+    let depths = read_lines_as_u32(filename)?;
+    Ok(calc_num_higher(depths))
 }
 
-pub fn calc_windowed_result() -> u32 {
-    let depths = read_file(String::from("input.txt"));
+pub fn calc_windowed_result(filename: &str) -> Result<u32> {
+    let depths = read_lines_as_u32(filename)?;
     let windowed = calc_windows(depths);
-    calc_num_higher(windowed)
-}
-
-fn read_file(filename: String) -> Vec<u32> {
-    let file = File::open(filename).expect("File doesn't exist");
-    let buf = BufReader::new(file);
-    buf.lines()
-        .map(|l| l.expect("").parse::<u32>().unwrap())
-        .collect()
+    Ok(calc_num_higher(windowed))
 }
 
 fn calc_num_higher(depths: Vec<u32>) -> u32 {
