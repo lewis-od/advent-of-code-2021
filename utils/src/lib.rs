@@ -8,6 +8,10 @@ pub fn read_lines_as_u32(filename: &str) -> Result<Vec<u32>> {
     read_and_map_lines(filename, |value| value.parse::<u32>().unwrap())
 }
 
+pub fn read_lines_as_strings(filename: &str) -> Result<Vec<String>> {
+    read_and_map_lines(filename, |s| s)
+}
+
 fn read_and_map_lines<T>(filename: &str, mapper: fn(String) -> T) -> Result<Vec<T>> {
     Ok(read_lines(filename)?
         .map(|l| mapper(l.expect("Expected line")))
