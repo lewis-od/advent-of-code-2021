@@ -6,9 +6,9 @@ pub trait Execute {
 }
 
 pub struct Submarine {
-    pub position: i32,
-    pub depth: i32,
-    pub aim: i32,
+    position: i32,
+    depth: i32,
+    aim: i32,
 }
 
 impl Submarine {
@@ -32,5 +32,39 @@ impl Submarine {
 
     pub fn depth(&self) -> i32 {
         self.depth
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    struct StubCommand {}
+
+    impl Clone for StubCommand {
+        fn clone(&self) -> Self {
+            StubCommand {}
+        }
+    }
+
+    impl Execute for StubCommand {
+        fn execute(&self, submarine: &mut Submarine) {
+            submarine.position += 1;
+            submarine.depth += 2;
+            submarine.aim += 3;
+        }
+    }
+
+    #[test]
+    fn executes_all_commands() {
+        let commands: Vec<Box<dyn Execute>> =
+            vec![Box::new(StubCommand {}), Box::new(StubCommand {})];
+
+        let mut submarine = Submarine::new();
+        submarine.process_commands(&commands);
+
+        assert_eq!(2, submarine.position);
+        assert_eq!(4, submarine.depth);
+        assert_eq!(6, submarine.aim);
     }
 }

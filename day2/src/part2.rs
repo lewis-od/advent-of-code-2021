@@ -1,8 +1,8 @@
 use crate::{Execute, Submarine};
 
 #[derive(Debug, PartialEq)]
-pub struct UpCommand {
-    pub amount: i32,
+struct UpCommand {
+    amount: i32,
 }
 
 impl Execute for UpCommand {
@@ -12,8 +12,8 @@ impl Execute for UpCommand {
 }
 
 #[derive(Debug, PartialEq)]
-pub struct DownCommand {
-    pub amount: i32,
+struct DownCommand {
+    amount: i32,
 }
 
 impl Execute for DownCommand {
@@ -23,8 +23,8 @@ impl Execute for DownCommand {
 }
 
 #[derive(Debug, PartialEq)]
-pub struct ForwardCommand {
-    pub amount: i32,
+struct ForwardCommand {
+    amount: i32,
 }
 
 impl Execute for ForwardCommand {
@@ -59,7 +59,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn matches_example() {
+    fn processes_commands_correctly() {
         let inputs = vec![
             "forward 5",
             "down 5",
@@ -76,5 +76,41 @@ mod tests {
 
         assert_eq!(15, sub.position());
         assert_eq!(60, sub.depth());
+    }
+
+    #[test]
+    fn up_command_decreases_aim() {
+        let amount = 5;
+        let command = Box::new(UpCommand { amount });
+
+        let mut submarine = Submarine::new();
+        submarine.process_commands(&vec![command]);
+
+        assert_eq!(-amount, submarine.aim);
+    }
+
+    #[test]
+    fn down_command_increases_aim() {
+        let amount = 5;
+        let command = Box::new(DownCommand { amount });
+
+        let mut submarine = Submarine::new();
+        submarine.process_commands(&vec![command]);
+
+        assert_eq!(amount, submarine.aim);
+    }
+
+    #[test]
+    fn fprward_command_increases_position_and_depth() {
+        let amount = 5;
+        let aim = 2;
+        let command = Box::new(ForwardCommand { amount });
+
+        let mut submarine = Submarine::new();
+        submarine.aim = aim;
+        submarine.process_commands(&vec![command]);
+
+        assert_eq!(amount, submarine.position());
+        assert_eq!(amount * aim, submarine.depth());
     }
 }
