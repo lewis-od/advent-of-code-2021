@@ -1,7 +1,7 @@
-use std::io::Lines;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
+use std::io::Lines;
 use std::io::Result;
 
 pub fn read_lines_as_u32(filename: &str) -> Result<Vec<u32>> {

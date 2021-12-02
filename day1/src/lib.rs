@@ -1,5 +1,5 @@
-use utils::read_lines_as_u32;
 use std::io::Result;
+use utils::read_lines_as_u32;
 
 pub fn calc_result(filename: &str) -> Result<u32> {
     let depths = read_lines_as_u32(filename)?;
