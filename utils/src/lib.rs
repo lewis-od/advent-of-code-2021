@@ -21,7 +21,8 @@ impl<'a> FileReader<'a> {
     }
 
     fn read_and_map_lines<T>(&self, mapper: fn(String) -> T) -> Result<Vec<T>> {
-        Ok(self.read_lines()?
+        Ok(self
+            .read_lines()?
             .map(|l| mapper(l.expect("Expected line")))
             .collect())
     }
@@ -39,6 +40,6 @@ impl<'a> ReadLines for FileReader<'a> {
     }
 
     fn read_lines_as_strings(&self) -> Result<Vec<String>> {
-         self.read_and_map_lines(|s| s)
+        self.read_and_map_lines(|s| s)
     }
 }

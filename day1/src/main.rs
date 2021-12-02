@@ -1,6 +1,6 @@
-use day1::{calc_windowed_result, calc_num_higher};
-use utils::{FileReader, INPUT_FILE_NAME, ReadLines};
+use day1::{calc_num_higher, calc_windowed_result};
 use std::io::Result;
+use utils::{FileReader, ReadLines, INPUT_FILE_NAME};
 
 fn main() -> Result<()> {
     let file_reader = FileReader::new(INPUT_FILE_NAME);

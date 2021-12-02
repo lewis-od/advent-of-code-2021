@@ -1,46 +1,55 @@
-use crate::Command;
-use crate::Direction;
-use crate::parse_command;
+use crate::{Execute, Submarine};
 
-pub struct Submarine {
-    position: i32,
-    depth: i32,
-    aim: i32,
+#[derive(Debug, PartialEq)]
+pub struct UpCommand {
+    pub amount: i32,
 }
 
-impl Submarine {
-    pub fn new() -> Submarine {
-        Submarine {
-            position: 0,
-            depth: 0,
-            aim: 0,
-        }
+impl Execute for UpCommand {
+    fn execute(&self, submarine: &mut Submarine) {
+        submarine.aim -= self.amount;
     }
+}
 
-    pub fn process_commands(&mut self, commands: &Vec<String>) {
-        for command in commands {
-            let command = parse_command(command);
-            self.process_command(&command);
-        }
+#[derive(Debug, PartialEq)]
+pub struct DownCommand {
+    pub amount: i32,
+}
+
+impl Execute for DownCommand {
+    fn execute(&self, submarine: &mut Submarine) {
+        submarine.aim += self.amount;
     }
+}
 
-    fn process_command(&mut self, command: &Command) {
-        if command.direction == Direction::Forward {
-            self.position += command.amount;
-            self.depth += command.amount * self.aim;
-        } else if command.direction == Direction::Down {
-            self.aim += command.amount;
-        } else if command.direction == Direction::Up {
-            self.aim -= command.amount;
-        }
+#[derive(Debug, PartialEq)]
+pub struct ForwardCommand {
+    pub amount: i32,
+}
+
+impl Execute for ForwardCommand {
+    fn execute(&self, submarine: &mut Submarine) {
+        submarine.position += self.amount;
+        submarine.depth += self.amount * submarine.aim;
     }
+}
 
-    pub fn position(&self) -> i32 {
-        self.position
-    }
+pub fn parse_commands(commands: &Vec<&str>) -> Vec<Box<dyn Execute>> {
+    commands
+        .iter()
+        .map(|command| parse_command(command))
+        .collect()
+}
 
-    pub fn depth(&self) -> i32 {
-        self.depth
+fn parse_command(command: &str) -> Box<dyn Execute> {
+    let parts: Vec<&str> = command.split(" ").collect();
+
+    let amount = parts[1].parse::<i32>().unwrap();
+    match parts[0] {
+        "up" => Box::new(UpCommand { amount }),
+        "down" => Box::new(DownCommand { amount }),
+        "forward" => Box::new(ForwardCommand { amount }),
+        _ => panic!("Unknown direction"),
     }
 }
 
@@ -52,16 +61,18 @@ mod tests {
     #[test]
     fn matches_example() {
         let inputs = vec![
-            "forward 5".to_string(),
-            "down 5".to_string(),
-            "forward 8".to_string(),
-            "up 3".to_string(),
-            "down 8".to_string(),
-            "forward 2".to_string(),
+            "forward 5",
+            "down 5",
+            "forward 8",
+            "up 3",
+            "down 8",
+            "forward 2",
         ];
 
+        let commands = parse_commands(&inputs);
+
         let mut sub = Submarine::new();
-        sub.process_commands(&inputs);
+        sub.process_commands(&commands);
 
         assert_eq!(15, sub.position());
         assert_eq!(60, sub.depth());
