@@ -15,7 +15,7 @@ impl Submarine {
         }
     }
 
-    pub fn process_commands(&mut self, commands: &Vec<&str>) {
+    pub fn process_commands(&mut self, commands: &Vec<String>) {
         for command in commands {
             let command = parse_command(command);
             self.process_command(&command);
@@ -48,12 +48,12 @@ mod tests {
     #[test]
     fn processes_commands_correctly() {
         let inputs = vec![
-            "forward 5",
-            "down 5",
-            "forward 8",
-            "up 3",
-            "down 8",
-            "forward 2",
+            "forward 5".to_string(),
+            "down 5".to_string(),
+            "forward 8".to_string(),
+            "up 3".to_string(),
+            "down 8".to_string(),
+            "forward 2".to_string(),
         ];
 
         let mut sub = Submarine::new();

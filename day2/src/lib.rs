@@ -57,4 +57,34 @@ mod tests {
             command
         );
     }
+
+    #[test]
+    fn parses_down_command() {
+        let command_text = "down 1";
+
+        let command = parse_command(command_text);
+
+        assert_eq!(
+            Command {
+                direction: Direction::Down,
+                amount: 1
+            },
+            command
+        );
+    }
+
+    #[test]
+    fn parses_forward_command() {
+        let command_text = "forward 3";
+
+        let command = parse_command(command_text);
+
+        assert_eq!(
+            Command {
+                direction: Direction::Forward,
+                amount: 3
+            },
+            command
+        );
+    }
 }
