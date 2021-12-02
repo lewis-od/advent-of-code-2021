@@ -1,3 +1,7 @@
+use crate::Command;
+use crate::Direction;
+use crate::parse_command;
+
 pub struct Submarine {
     position: i32,
     depth: i32,
@@ -15,21 +19,19 @@ impl Submarine {
 
     pub fn process_commands(&mut self, commands: &Vec<&str>) {
         for command in commands {
-            self.process_command(command);
+            let command = parse_command(command);
+            self.process_command(&command);
         }
     }
 
-    fn process_command(&mut self, command: &str) {
-        let parts: Vec<&str> = command.split(" ").collect();
-        let direction = parts[0];
-        let amount = parts[1].parse::<i32>().unwrap();
-        if direction == "forward" {
-            self.position += amount;
-            self.depth += amount * self.aim;
-        } else if direction == "down" {
-            self.aim += amount;
-        } else if direction == "up" {
-            self.aim -= amount;
+    fn process_command(&mut self, command: &Command) {
+        if command.direction == Direction::Forward {
+            self.position += command.amount;
+            self.depth += command.amount * self.aim;
+        } else if command.direction == Direction::Down {
+            self.aim += command.amount;
+        } else if command.direction == Direction::Up {
+            self.aim -= command.amount;
         }
     }
 
@@ -41,7 +43,6 @@ impl Submarine {
         self.depth
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -59,7 +60,8 @@ mod tests {
             "forward 2",
         ];
 
-        let sub = Submarine::new();
+        let mut sub = Submarine::new();
+        sub.process_commands(&inputs);
 
         assert_eq!(15, sub.position());
         assert_eq!(60, sub.depth());
