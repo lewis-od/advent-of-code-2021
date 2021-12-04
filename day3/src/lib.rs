@@ -6,45 +6,86 @@ pub fn calc_power_consumption(inputs: &Vec<u32>, num_digits: u8) -> u32 {
     (gamma_rate * epsilon_rate).try_into().unwrap()
 }
 
-fn flip_bits(value: u32, num_digits: u8) -> u32 {
-    let shift = 32 - num_digits;
-    !(value << shift) >> shift
+pub fn calc_life_support_rating(inputs: &Vec<u32>, num_digits: u8) -> u32 {
+    let oxygen_generator_rating = calc_oxygen_generator_rating(inputs, num_digits);
+    let co2_scrubber_rating = calc_co2_scrubber_rating(inputs, num_digits);
+    oxygen_generator_rating * co2_scrubber_rating
 }
 
-//fn max_index(list: &Vec<u32>) -> usize {
-//    let mut max_idx = 0;
-//    let mut max_value = 0;
-//    for (idx, &value) in list.iter().enumerate() {
-//        if value > max_value {
-//            max_idx = idx;
-//            max_value = value;
-//        }
-//    }
-//    max_idx.try_into().unwrap()
-//}
+fn calc_oxygen_generator_rating(inputs: &Vec<u32>, num_digits: u8) -> u32 {
+    let mut sieve = inputs.clone();
+
+    for shift in 1..num_digits + 1 {
+        let position = num_digits - shift;
+        let most_common_digits = find_most_common(&sieve, num_digits);
+        let most_common = get_digit(&most_common_digits, position);
+        sieve = sieve
+            .iter()
+            .filter(|number| get_digit(*number, position) == most_common)
+            .map(|v| v.to_owned())
+            .collect();
+        if sieve.len() == 1 {
+            return sieve[0];
+        }
+    }
+    0
+}
+
+fn calc_co2_scrubber_rating(inputs: &Vec<u32>, num_digits: u8) -> u32 {
+    let mut sieve = inputs.clone();
+
+    for shift in 1..num_digits + 1 {
+        let position = num_digits - shift;
+        let most_common_digits = find_most_common(&sieve, num_digits);
+        let least_common_digits = flip_bits(most_common_digits, num_digits);
+        let least_common = get_digit(&least_common_digits, position);
+        sieve = sieve
+            .iter()
+            .filter(|number| get_digit(*number, position) == least_common)
+            .map(|v| v.to_owned())
+            .collect();
+        if sieve.len() == 1 {
+            return sieve[0];
+        }
+    }
+    0
+}
 
 pub fn find_most_common(input: &Vec<u32>, num_digits: u8) -> u32 {
     let mut output = 0;
 
-    for n in 0..num_digits {
+    for n in 1..num_digits + 1 {
         let position = num_digits - n;
         let num_ones = count_ones(input, position);
 
-        if num_ones as f32 >= (input.len() / 2) as f32 {
+        if num_ones as f32 >= (input.len() as f32 / 2.0 as f32) {
             output += 1;
         }
         output = output << 1;
     }
-    output
+    output >> 1
 }
 
 fn count_ones(input: &Vec<u32>, position: u8) -> u32 {
     let mut num_ones = 0;
     for number in input {
-        let digit = if number & (1 << position) != 0 { 1 } else { 0 };
+        let digit = get_digit(number, position);
         num_ones += digit;
     }
     num_ones
+}
+
+fn get_digit(value: &u32, position: u8) -> u32 {
+    if value & (1 << position) != 0 {
+        1
+    } else {
+        0
+    }
+}
+
+fn flip_bits(value: u32, num_digits: u8) -> u32 {
+    let shift = 32 - num_digits;
+    !(value << shift) >> shift
 }
 
 #[cfg(test)]
@@ -54,21 +95,11 @@ mod tests {
     #[test]
     fn counts_last_digit() {
         let input = vec![
-            0b00100,
-            0b11110,
-            0b10110,
-            0b10111,
-            0b10101,
-            0b01111,
-            0b00111,
-            0b11100,
-            0b10000,
-            0b11001,
-            0b00010,
-            0b01010,
+            0b00100, 0b11110, 0b10110, 0b10111, 0b10101, 0b01111, 0b00111, 0b11100, 0b10000,
+            0b11001, 0b00010, 0b01010,
         ];
 
-        let result  = count_ones(&input, 0);
+        let result = count_ones(&input, 0);
 
         assert_eq!(5, result);
     }
@@ -76,21 +107,11 @@ mod tests {
     #[test]
     fn counts_first_digit() {
         let input = vec![
-            0b00100,
-            0b11110,
-            0b10110,
-            0b10111,
-            0b10101,
-            0b01111,
-            0b00111,
-            0b11100,
-            0b10000,
-            0b11001,
-            0b00010,
-            0b01010,
+            0b00100, 0b11110, 0b10110, 0b10111, 0b10101, 0b01111, 0b00111, 0b11100, 0b10000,
+            0b11001, 0b00010, 0b01010,
         ];
 
-        let result  = count_ones(&input, 4);
+        let result = count_ones(&input, 4);
 
         assert_eq!(7, result);
     }
@@ -98,18 +119,8 @@ mod tests {
     #[test]
     fn finds_most_common_bits() {
         let input = vec![
-            0b00100,
-            0b11110,
-            0b10110,
-            0b10111,
-            0b10101,
-            0b01111,
-            0b00111,
-            0b11100,
-            0b10000,
-            0b11001,
-            0b00010,
-            0b01010,
+            0b00100, 0b11110, 0b10110, 0b10111, 0b10101, 0b01111, 0b00111, 0b11100, 0b10000,
+            0b11001, 0b00010, 0b01010,
         ];
 
         let result = find_most_common(&input, 5);
@@ -120,18 +131,8 @@ mod tests {
     #[test]
     fn finds_power_rate() {
         let input = vec![
-            0b00100,
-            0b11110,
-            0b10110,
-            0b10111,
-            0b10101,
-            0b01111,
-            0b00111,
-            0b11100,
-            0b10000,
-            0b11001,
-            0b00010,
-            0b01010,
+            0b00100, 0b11110, 0b10110, 0b10111, 0b10101, 0b01111, 0b00111, 0b11100, 0b10000,
+            0b11001, 0b00010, 0b01010,
         ];
 
         let result = calc_power_consumption(&input, 5);
@@ -140,54 +141,38 @@ mod tests {
     }
 
     #[test]
-    fn finds_max_index() {
-        let inputs = vec![0, 1, 5, 4, 2];
+    fn calcs_scrubber_rating() {
+        let input = vec![
+            0b00100, 0b11110, 0b10110, 0b10111, 0b10101, 0b01111, 0b00111, 0b11100, 0b10000,
+            0b11001, 0b00010, 0b01010,
+        ];
 
-        let index = max_index(&inputs);
-        assert_eq!(2, index);
+        let result = calc_co2_scrubber_rating(&input, 5);
+
+        assert_eq!(10, result);
     }
 
-//    #[test]
-//    fn calcs_scrubber_rating() {
-//        let input = vec![
-//            0b00100,
-//            0b11110,
-//            0b10110,
-//            0b10111,
-//            0b10101,
-//            0b01111,
-//            0b00111,
-//            0b11100,
-//            0b10000,
-//            0b11001,
-//            0b00010,
-//            0b01010,
-//        ];
-//
-//        let result = calc_scrubber_rating(&input, 5);
-//
-//        assert_eq!(10, result);
-//    }
+    #[test]
+    fn calcs_oxygen_generator_rating() {
+        let input = vec![
+            0b00100, 0b11110, 0b10110, 0b10111, 0b10101, 0b01111, 0b00111, 0b11100, 0b10000,
+            0b11001, 0b00010, 0b01010,
+        ];
 
-//    #[test]
-//    fn calcs_oxygen_rating() {
-//        let input = vec![
-//            0b00100,
-//            0b11110,
-//            0b10110,
-//            0b10111,
-//            0b10101,
-//            0b01111,
-//            0b00111,
-//            0b11100,
-//            0b10000,
-//            0b11001,
-//            0b00010,
-//            0b01010,
-//        ];
-//
-//        let result = calc_oxygen_rating(&input, 5);
-//
-//        assert_eq!(23, result);
-//    }
+        let result = calc_oxygen_generator_rating(&input, 5);
+
+        assert_eq!(23, result);
+    }
+
+    #[test]
+    fn calcs_life_support_rating() {
+        let input = vec![
+            0b00100, 0b11110, 0b10110, 0b10111, 0b10101, 0b01111, 0b00111, 0b11100, 0b10000,
+            0b11001, 0b00010, 0b01010,
+        ];
+
+        let result = calc_life_support_rating(&input, 5);
+
+        assert_eq!(230, result);
+    }
 }
