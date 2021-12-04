@@ -1,9 +1,7 @@
-use std::convert::TryInto;
-
 pub fn calc_power_consumption(inputs: &Vec<u32>, num_digits: u8) -> u32 {
     let gamma_rate = find_most_common(inputs, num_digits);
     let epsilon_rate = flip_bits(gamma_rate, num_digits);
-    (gamma_rate * epsilon_rate).try_into().unwrap()
+    gamma_rate * epsilon_rate
 }
 
 pub fn calc_life_support_rating(inputs: &Vec<u32>, num_digits: u8) -> u32 {
@@ -13,42 +11,20 @@ pub fn calc_life_support_rating(inputs: &Vec<u32>, num_digits: u8) -> u32 {
 }
 
 fn calc_oxygen_generator_rating(inputs: &Vec<u32>, num_digits: u8) -> u32 {
-    let mut sieve = inputs.clone();
-
-    for shift in 1..num_digits + 1 {
-        let position = num_digits - shift;
-        let most_common_digits = find_most_common(&sieve, num_digits);
-        let most_common = get_digit(&most_common_digits, position);
-        sieve = sieve
-            .iter()
-            .filter(|number| get_digit(*number, position) == most_common)
-            .map(|v| v.to_owned())
-            .collect();
-        if sieve.len() == 1 {
-            return sieve[0];
-        }
-    }
-    0
+    let most_common_generator = |values: &Vec<u32>, position: u8| -> u32 {
+        let most_common_digits = find_most_common(&values, num_digits);
+        get_digit(&most_common_digits, position)
+    };
+    filter_numbers(inputs, num_digits, most_common_generator)
 }
 
 fn calc_co2_scrubber_rating(inputs: &Vec<u32>, num_digits: u8) -> u32 {
-    let mut sieve = inputs.clone();
-
-    for shift in 1..num_digits + 1 {
-        let position = num_digits - shift;
-        let most_common_digits = find_most_common(&sieve, num_digits);
+    let least_common_generator = |values: &Vec<u32>, position: u8| -> u32 {
+        let most_common_digits = find_most_common(&values, num_digits);
         let least_common_digits = flip_bits(most_common_digits, num_digits);
-        let least_common = get_digit(&least_common_digits, position);
-        sieve = sieve
-            .iter()
-            .filter(|number| get_digit(*number, position) == least_common)
-            .map(|v| v.to_owned())
-            .collect();
-        if sieve.len() == 1 {
-            return sieve[0];
-        }
-    }
-    0
+        get_digit(&least_common_digits, position)
+    };
+    filter_numbers(inputs, num_digits, least_common_generator)
 }
 
 pub fn find_most_common(input: &Vec<u32>, num_digits: u8) -> u32 {
@@ -64,6 +40,27 @@ pub fn find_most_common(input: &Vec<u32>, num_digits: u8) -> u32 {
         output = output << 1;
     }
     output >> 1
+}
+
+fn filter_numbers<F>(inputs: &Vec<u32>, num_digits: u8, filter_generator: F) -> u32
+where
+    F: Fn(&Vec<u32>, u8) -> u32,
+{
+    let mut sieve = inputs.clone();
+
+    for shift in 1..num_digits + 1 {
+        let position = num_digits - shift;
+        let filter = filter_generator(&sieve, position);
+        sieve = sieve
+            .iter()
+            .filter(|number| get_digit(*number, position) == filter)
+            .map(|v| v.to_owned())
+            .collect();
+        if sieve.len() == 1 {
+            return sieve[0];
+        }
+    }
+    0
 }
 
 fn count_ones(input: &Vec<u32>, position: u8) -> u32 {
