@@ -4,9 +4,8 @@ pub mod grid;
 pub use cell::Cell;
 pub use grid::Grid;
 use std::cell::RefCell;
-use std::rc::Rc;
 
-pub fn find_first_winner(mut grids: RefCell<Vec<Grid>>, numbers: &Vec<u32>) -> u32 {
+pub fn find_first_winner_score(grids: RefCell<Vec<Grid>>, numbers: &Vec<u32>) -> u32 {
     for number in numbers.iter() {
         for grid in grids.borrow_mut().iter_mut() {
             grid.mark_cells(*number);
@@ -18,7 +17,7 @@ pub fn find_first_winner(mut grids: RefCell<Vec<Grid>>, numbers: &Vec<u32>) -> u
     0
 }
 
-pub fn find_last_winner_score(mut grids: RefCell<Vec<Grid>>, numbers: &Vec<u32>) -> u32 {
+pub fn find_last_winner_score(grids: RefCell<Vec<Grid>>, numbers: &Vec<u32>) -> u32 {
     let mut last_grid = Grid::new(vec![vec![]]);
     for number in numbers.iter() {
         let mut num_won = 0;
