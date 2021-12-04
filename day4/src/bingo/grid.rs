@@ -8,7 +8,6 @@ pub struct Grid {
 }
 
 impl Clone for Grid {
-
     fn clone(&self) -> Self {
         Grid {
             rows: self.rows.clone(),
@@ -20,7 +19,11 @@ impl Clone for Grid {
 
 impl Grid {
     pub fn new(cells: Vec<Vec<Cell>>) -> Grid {
-        Grid { rows: cells, has_won: false, score: 0 }
+        Grid {
+            rows: cells,
+            has_won: false,
+            score: 0,
+        }
     }
 
     pub fn cell(&self, row: usize, col: usize) -> &Cell {
@@ -68,11 +71,11 @@ impl Grid {
                     let col_cell = self.cell(row, column);
                     if !col_cell.is_marked() {
                         column_all_marked = false;
-                        break
+                        break;
                     }
                 }
                 if column_all_marked {
-                    return true
+                    return true;
                 }
             }
         }
@@ -91,7 +94,7 @@ impl Grid {
                     }
                 }
                 if row_all_marked {
-                    return true
+                    return true;
                 }
             }
         }
@@ -120,18 +123,18 @@ mod tests {
 
     fn test_grid() -> Grid {
         let values = vec![
-            vec![22, 13, 17, 11,  0],
-            vec![ 8,  2, 23,  4, 24],
-            vec![21,  9, 14, 16,  7],
-            vec![ 6, 10,  3, 18,  5],
-            vec![ 1, 12, 20, 15, 19],
-
+            vec![22, 13, 17, 11, 0],
+            vec![8, 2, 23, 4, 24],
+            vec![21, 9, 14, 16, 7],
+            vec![6, 10, 3, 18, 5],
+            vec![1, 12, 20, 15, 19],
         ];
         grid_from_values(values)
     }
 
     fn grid_from_values(values: Vec<Vec<u32>>) -> Grid {
-        let cells = values.iter()
+        let cells = values
+            .iter()
             .map(|row| row.iter().map(|value| Cell::new(*value)).collect())
             .collect();
         Grid::new(cells)
@@ -139,9 +142,7 @@ mod tests {
 
     #[test]
     fn marks_all_cells() {
-        let cells = vec![
-            vec![Cell::new(1), Cell::new(2)],
-        ];
+        let cells = vec![vec![Cell::new(1), Cell::new(2)]];
         let mut grid = Grid::new(cells);
 
         grid.mark_cells(2);

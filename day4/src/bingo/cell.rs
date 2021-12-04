@@ -6,7 +6,10 @@ pub struct Cell {
 
 impl Clone for Cell {
     fn clone(&self) -> Self {
-        Cell { value: self.value, is_marked: self.is_marked }
+        Cell {
+            value: self.value,
+            is_marked: self.is_marked,
+        }
     }
 }
 
@@ -35,8 +38,8 @@ impl Cell {
 
 #[cfg(test)]
 mod tests {
-    use crate::bingo::*;
     use crate::bingo::cell::Cell;
+    use crate::bingo::*;
 
     #[test]
     fn marks_self_when_value_is_called() {

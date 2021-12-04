@@ -5,7 +5,8 @@ pub fn parse_numbers(row: &str) -> Vec<u32> {
 }
 
 pub fn parse_grid(input: &Vec<&String>) -> Vec<Vec<Cell>> {
-    input.iter()
+    input
+        .iter()
         .map(|row| parse_row_to_u32(row, " "))
         .map(|row| map_row_to_cells(row))
         .collect()
@@ -46,11 +47,41 @@ mod tests {
         let output = parse_grid(&input);
 
         let expected = vec![
-            vec![Cell::new(22), Cell::new(13), Cell::new(17), Cell::new(11), Cell::new(0)],
-            vec![Cell::new(8), Cell::new(2), Cell::new(23), Cell::new(4), Cell::new(24)],
-            vec![Cell::new(21), Cell::new(9), Cell::new(14), Cell::new(16), Cell::new(7)],
-            vec![Cell::new(6), Cell::new(10), Cell::new(3), Cell::new(18), Cell::new(5)],
-            vec![Cell::new(1), Cell::new(12), Cell::new(20), Cell::new(15), Cell::new(19)],
+            vec![
+                Cell::new(22),
+                Cell::new(13),
+                Cell::new(17),
+                Cell::new(11),
+                Cell::new(0),
+            ],
+            vec![
+                Cell::new(8),
+                Cell::new(2),
+                Cell::new(23),
+                Cell::new(4),
+                Cell::new(24),
+            ],
+            vec![
+                Cell::new(21),
+                Cell::new(9),
+                Cell::new(14),
+                Cell::new(16),
+                Cell::new(7),
+            ],
+            vec![
+                Cell::new(6),
+                Cell::new(10),
+                Cell::new(3),
+                Cell::new(18),
+                Cell::new(5),
+            ],
+            vec![
+                Cell::new(1),
+                Cell::new(12),
+                Cell::new(20),
+                Cell::new(15),
+                Cell::new(19),
+            ],
         ];
         assert_eq!(expected, output);
     }
