@@ -1,7 +1,7 @@
-mod point;
-mod line_segment;
 mod grid;
+mod line_segment;
+mod point;
 
-pub use point::Point;
-pub use line_segment::LineSegment;
 pub use grid::Grid;
+pub use line_segment::LineSegment;
+pub use point::Point;

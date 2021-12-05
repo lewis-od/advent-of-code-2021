@@ -1,6 +1,6 @@
-use std::io;
 use day5::{part1, part2};
-use utils::{FileReader, INPUT_FILE_NAME, ReadLines};
+use std::io;
+use utils::{FileReader, ReadLines, INPUT_FILE_NAME};
 
 fn main() -> io::Result<()> {
     let reader = FileReader::new(INPUT_FILE_NAME);

@@ -10,8 +10,12 @@ pub fn parse_row_to_line_segment(row: &str) -> LineSegment {
 
 fn parse_coordinates_to_point(coordinates: &str) -> Point {
     let parts = coordinates.split(",").collect::<Vec<&str>>();
-    let x = parts[0].parse::<u32>().expect("Couldn't parse x to integer");
-    let y = parts[1].parse::<u32>().expect("Couldn't parse y to integer");
+    let x = parts[0]
+        .parse::<u32>()
+        .expect("Couldn't parse x to integer");
+    let y = parts[1]
+        .parse::<u32>()
+        .expect("Couldn't parse y to integer");
     Point::new(x, y)
 }
 

@@ -18,7 +18,7 @@ impl LineSegment {
     pub fn end(&self) -> &Point {
         &self.end
     }
-    
+
     pub fn x_range(&self) -> (u32, u32) {
         if self.start.x() > self.end.x() {
             (self.end.x(), self.start.x())

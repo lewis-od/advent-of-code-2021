@@ -1,4 +1,4 @@
-use crate::geometry::line_segment::LineSegment;
+use super::LineSegment;
 
 pub struct Grid {
     size: usize,
@@ -7,7 +7,10 @@ pub struct Grid {
 
 impl Grid {
     pub fn new(size: usize) -> Grid {
-        Grid { size, values: create_zero_grid(size) }
+        Grid {
+            size,
+            values: create_zero_grid(size),
+        }
     }
 
     pub fn size(&self) -> usize {
@@ -55,6 +58,18 @@ impl Grid {
             y = (y as i32 + dy) as u32;
         }
     }
+
+    pub fn num_dangerous_points(&self) -> u32 {
+        let mut num_intersections = 0;
+        for x in 0..self.size() {
+            for y in 0..self.size() {
+                if self.value(x as u32, y as u32) >= 2 {
+                    num_intersections += 1;
+                }
+            }
+        }
+        num_intersections
+    }
 }
 
 fn create_zero_grid(size: usize) -> Vec<Vec<u32>> {
@@ -65,7 +80,7 @@ fn create_zero_grid(size: usize) -> Vec<Vec<u32>> {
     rows
 }
 
-fn create_zeros(size:usize) -> Vec<u32> {
+fn create_zeros(size: usize) -> Vec<u32> {
     let mut zeros = Vec::with_capacity(size);
     for _ in 0..size {
         zeros.push(0);
@@ -75,8 +90,8 @@ fn create_zeros(size:usize) -> Vec<u32> {
 
 #[cfg(test)]
 mod tests {
-    use crate::geometry::Point;
     use super::*;
+    use crate::geometry::Point;
 
     #[test]
     fn initialises_with_square_grid_of_zeros() {
