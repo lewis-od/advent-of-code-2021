@@ -1,20 +1,13 @@
-use lantern_fish::LanternFish;
-
-pub mod lantern_fish;
-
-pub fn part1(initial_state: &Vec<u32>, num_days: u32) -> u64 {
-    let mut fish = initial_state.iter()
-        .map(|state| LanternFish::new(*state))
-        .collect::<Vec<LanternFish>>();
-    for _ in 0..num_days {
-        let mut babies = fish.iter_mut()
-            .map(|fish| fish.tick())
-            .filter(|possible_baby| possible_baby.is_some())
-            .map(|baby| baby.unwrap())
-            .collect::<Vec<LanternFish>>();
-        fish.append(&mut babies);
+pub fn simulate_growth(initial_state: &Vec<u32>, num_days: u32) -> u64 {
+    let mut timer_counts = vec![0, 0, 0, 0, 0, 0, 0, 0, 0];
+    for age in initial_state {
+        timer_counts[*age as usize] += 1
     }
-    fish.len() as u64
+    for _ in 0..num_days {
+        timer_counts.rotate_left(1);
+        timer_counts[6] += timer_counts[8];
+    }
+    timer_counts.iter().sum()
 }
 
 #[cfg(test)]
@@ -26,7 +19,7 @@ mod tests {
         let initial_state = vec![3, 4, 3, 1, 2];
         let num_days = 2;
 
-        let num_fish = part1(&initial_state, num_days);
+        let num_fish = simulate_growth(&initial_state, num_days);
 
         assert_eq!(num_fish, 6);
     }
@@ -36,7 +29,7 @@ mod tests {
         let initial_state = vec![3, 4, 3, 1, 2];
         let num_days = 18;
 
-        let num_fish = part1(&initial_state, num_days);
+        let num_fish = simulate_growth(&initial_state, num_days);
 
         assert_eq!(num_fish, 26);
     }
@@ -46,7 +39,7 @@ mod tests {
         let initial_state = vec![3, 4, 3, 1, 2];
         let num_days = 80;
 
-        let num_fish = part1(&initial_state, num_days);
+        let num_fish = simulate_growth(&initial_state, num_days);
 
         assert_eq!(num_fish, 5934);
     }
