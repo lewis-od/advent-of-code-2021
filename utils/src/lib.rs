@@ -1,8 +1,5 @@
 use std::fs::File;
-use std::io::{BufRead, Error};
-use std::io::BufReader;
-use std::io::Lines;
-use std::io::Result;
+use std::io::{BufRead, BufReader, Lines, Result};
 
 pub static INPUT_FILE_NAME: &str = "input.txt";
 
